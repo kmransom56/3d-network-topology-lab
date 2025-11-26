@@ -259,7 +259,23 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Python** community for excellent libraries
 - **Contributors** who help improve this project
 
+## 📸 Screenshots
+
+### 🎨 3D Network Visualization
+![3D Network Visualizer](screenshots/3d_main_interface.png)
+
+### ⚙️ Configuration Setup
+![Configuration Setup](screenshots/configuration_setup.png)
+
+### 🔄 VSS to SVG Conversion
+![VSS Converter](screenshots/vss_converter_help.png)
+
+### 📁 Project Structure
+![Project Structure](screenshots/project_structure.png)
+
+### 📖 Documentation
+![README Preview](screenshots/readme_preview.png)
+
 ---
 
 **Transform your FortiGate network from static diagrams to interactive 3D visualizations! 🌐✨**
-# 3d-network-topology-lab
