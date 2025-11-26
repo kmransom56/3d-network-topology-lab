@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>3D Network Visualizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <p>Loading 3D Network...</p>
+    </div>
+    
+    <div id="header">
+        <h1>3D Network Visualizer</h1>
+        <div class="controls">
+            <button id="btnReset">Reset View</button>
+            <button id="btnFullscreen">Fullscreen</button>
+            <button id="btnScreenshot">Screenshot</button>
+        </div>
+    </div>
+    
+    <div id="sidebar">
+        <div class="panel">
+            <h3>Device Categories</h3>
+            <div id="categoryFilters">
+                <label><input type="checkbox" value="all" checked> All Devices</label>
+                <label><input type="checkbox" value="firewall"> Firewalls</label>
+                <label><input type="checkbox" value="switch"> Switches</label>
+                <label><input type="checkbox" value="access_point"> Access Points</label>
+                <label><input type="checkbox" value="router"> Routers</label>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>Display Options</h3>
+            <label><input type="checkbox" id="showLabels" checked> Show Labels</label>
+            <label><input type="checkbox" id="showConnections" checked> Show Connections</label>
+            <label><input type="checkbox" id="animateDevices"> Animate Devices</label>
+            <label><input type="range" id="zoomLevel" min="0.5" max="3" step="0.1" value="1"> Zoom</label>
+        </div>
+        
+        <div class="panel">
+            <h3>Device Info</h3>
+            <div id="deviceInfo">
+                <p>Click on a device to see details</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="mainContent">
+        <canvas id="renderCanvas"></canvas>
+        <div id="stats">
+            <span id="fps">FPS: 60</span>
+            <span id="deviceCount">Devices: 0</span>
+            <span id="connectionCount">Connections: 0</span>
+        </div>
+    </div>
+    
+    <!-- Babylon.js and dependencies -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    
+    <!-- Application scripts -->
+    <script src="js/NetworkVisualizer.js"></script>
+    <script src="js/DeviceManager.js"></script>
+    <script src="js/ConnectionManager.js"></script>
+    <script src="js/UIManager.js"></script>
+    <script src="js/SceneManager.js"></script>
+    
+    <script>
+        // Initialize application
+        window.addEventListener('DOMContentLoaded', () => {
+            const app = new NetworkVisualizer('renderCanvas');
+            app.init().then(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

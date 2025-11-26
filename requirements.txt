@@ -1,0 +1,21 @@
+# Core dependencies# FortiGate API Integration
+requests>=2.28.0
+aiohttp>=3.8.0
+certifi>=2022.0.0
+
+# Environment variable management
+python-dotenv>=0.19.0
+
+# 3D Conversion (for SVG to 3D pipeline)
+trimesh>=3.12.0
+numpy>=1.21.0
+
+# VSS to SVG conversion
+olefile>=0.46
+
+# Optional: For advanced image processing
+Pillow>=8.0.0
+
+# Development dependencies (optional)
+pytest>=6.0.0
+black>=22.0.0

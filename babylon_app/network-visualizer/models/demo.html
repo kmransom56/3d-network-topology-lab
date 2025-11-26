@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>3D Icons Demo - Babylon.js</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #renderCanvas { width: 100%; height: 100%; touch-action: none; }
+        #controls { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px; }
+        .control-group { margin: 10px 0; }
+        select { width: 200px; }
+    </style>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <div id="controls">
+        <h3>3D Network Icons</h3>
+        <div class="control-group">
+            <label>Category:</label>
+            <select id="categorySelect">
+                <option value="all">All</option>
+                <option value="firewall">Firewall</option>
+                <option value="switch">Switch</option>
+                <option value="access_point">Access Point</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <button onclick="loadSelected()">Load Selected</button>
+            <button onclick="clearScene()">Clear Scene</button>
+        </div>
+        <div id="info"></div>
+    </div>
+    
+    <script src="babylon-icon-loader.js"></script>
+    <script>
+        const canvas = document.getElementById('renderCanvas');
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
+        
+        // Camera
+        const camera = new BABYLON.ArcRotateCamera('camera', 0, Math.PI/3, 10, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        
+        // Light
+        const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), scene);
+        
+        // Ground
+        const ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 10, height: 10}, scene);
+        const groundMaterial = new BABYLON.StandardMaterial('groundMat', scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+        ground.material = groundMaterial;
+        
+        // Icon loader
+        const iconLoader = new Icon3DLoader(scene);
+        
+        // UI functions
+        function loadSelected() {{
+            const category = document.getElementById('categorySelect').value;
+            clearScene();
+            
+            let models = [];
+            if (category === 'all') {{
+                // Load a sample of each category
+                models = iconLoader.getModelsByCategory('firewall').slice(0, 3);
+                models = models.concat(iconLoader.getModelsByCategory('switch').slice(0, 3));
+                models = models.concat(iconLoader.getModelsByCategory('access_point').slice(0, 3));
+            }} else {{
+                models = iconLoader.getModelsByCategory(category);
+            }}
+            
+            // Position models in a grid
+            models.forEach((mesh, index) => {{
+                const row = Math.floor(index / 3);
+                const col = index % 3;
+                mesh.position = new BABYLON.Vector3(col * 2 - 2, 0.5, row * 2 - 2);
+            }});
+            
+            document.getElementById('info').textContent = `Loaded ${{models.length}} models`;
+        }}
+        
+        function clearScene() {{
+            // Remove all dynamically created meshes
+            scene.meshes.forEach(mesh => {{
+                if (mesh.name !== 'ground' && mesh.name !== 'camera') {{
+                    mesh.dispose();
+                }}
+            }});
+        }}
+        
+        // Run render loop
+        engine.runRenderLoop(() => {{
+            scene.render();
+        }});
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {{
+            engine.resize();
+        }});
+    </script>
+</body>
+</html>
