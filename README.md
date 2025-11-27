@@ -12,7 +12,8 @@ A comprehensive laboratory for discovering, visualizing, and managing network in
 
 ### 🎨 **3D Visualization**
 - **Interactive 3D diagrams** using Babylon.js
-- **Device categorization** with custom 3D models
+- **Authentic FortiGate 3D models** (FortiGate-61E, FortiSwitch-124E-POE, FortiAP-231F)
+- **Realistic device models** with proper materials and scaling
 - **Network connections** with bandwidth visualization
 - **Web-based interface** for easy sharing
 
@@ -25,11 +26,11 @@ A comprehensive laboratory for discovering, visualizing, and managing network in
 ## 🏗️ Architecture
 
 ```
-FortiGate Network → API Integration → 3D Models → Babylon.js Visualization
-     ↓                    ↓              ↓              ↓
-Live Discovery    Session Auth    OBJ/GLTF      Interactive 3D
-Device Metadata    Environment     3D Icons      Web Interface
-Network Links     Secure Config   Positioning    Real-time Updates
+FortiGate Network → API Integration → Blender 3D Models → Babylon.js Visualization
+     ↓                    ↓              ↓                    ↓
+Live Discovery    Session Auth    Realistic Models    Interactive 3D
+Device Metadata    Environment     FortiGate Equipment Web Interface
+Network Links     Secure Config   .glb Files         Real-time Updates
 ```
 
 ## 📦 Installation
@@ -38,12 +39,13 @@ Network Links     Secure Config   Positioning    Real-time Updates
 - Python 3.7+
 - FortiGate with admin access
 - Modern web browser
+- Blender 5.0+ (for 3D model creation)
 
 ### Quick Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/3d-network-topology-lab.git
+git clone https://github.com/kmransom56/3d-network-topology-lab.git
 cd 3d-network-topology-lab
 
 # Install dependencies
@@ -69,7 +71,16 @@ python run_fortigate_discovery.py --config
 python run_fortigate_discovery.py
 ```
 
-### 2. Launch 3D Visualization
+### 2. Generate 3D Models (First Time Setup)
+```bash
+# Create authentic FortiGate 3D models
+python create_fixed_endpoints.py
+
+# Verify models are created
+ls babylon_app/network-visualizer/assets/models/*.glb
+```
+
+### 3. Launch 3D Visualization
 ```bash
 # Copy topology to 3D app
 cp babylon_topology.json babylon_app/network-visualizer/models/manifest.json
@@ -78,10 +89,10 @@ cp babylon_topology.json babylon_app/network-visualizer/models/manifest.json
 cd babylon_app
 node server.js
 
-# Open browser to http://localhost:8080
+# Open browser to http://localhost:3001
 ```
 
-### 3. Convert Visio Diagrams (Optional)
+### 4. Convert Visio Diagrams (Optional)
 ```bash
 # Convert VSS to SVG
 python vss_to_svg.py input.vss --backend vss_extractor
@@ -104,8 +115,11 @@ python babylon_integration.py --input 3d_models/ --output web_app/
 │   └── .env.example                   # Credential template
 ├── 🎨 3D Visualization
 │   ├── babylon_app/                   # Babylon.js web application
+│   │   ├── network-visualizer/       # Main 3D visualizer
+│   │   ├── assets/models/             # 3D model files (.glb)
+│   │   └── js/DeviceManager.js       # Model loading logic
+│   ├── create_fixed_endpoints.py      # 3D model generator
 │   ├── svg_to_3d.py                  # SVG to 3D converter
-│   ├── advanced_3d_converter.py       # Advanced 3D pipeline
 │   └── babylon_integration.py         # Web app generator
 ├── 📊 VSS Conversion
 │   ├── converter.py                   # VSS extraction backend
@@ -113,6 +127,7 @@ python babylon_integration.py --input 3d_models/ --output web_app/
 ├── 📚 Documentation
 │   ├── FORTIGATE_SETUP.md             # Detailed setup guide
 │   ├── QUICKSTART.md                  # Quick reference
+│   ├── vss_to_3d_workflow.md          # 3D model workflow
 │   └── .gitignore                     # Security protections
 └── 📋 Configuration
     ├── requirements.txt               # Python dependencies
@@ -183,13 +198,16 @@ VIZ_CONFIG = {
 
 ## 📊 Supported Devices
 
-| Device Type | Discovery Method | 3D Model | Metadata |
-|-------------|------------------|-----------|----------|
-| **FortiGate** | System API | Firewall | CPU, memory, uptime |
-| **FortiSwitch** | Switch Controller | Switch | Port status, VLANs |
-| **FortiAP** | WiFi Controller | Access Point | Client count, radio info |
-| **Endpoints** | User Devices | Computer/Phone | IP, MAC, OS type |
-| **Interfaces** | System Interface | Network Port | Speed, status, MTU |
+| Device Type | Discovery Method | 3D Model | File Size | Metadata |
+|-------------|------------------|-----------|-----------|----------|
+| **FortiGate-61E** | System API | Firewall (1,832 bytes) | ✅ Working | CPU, memory, uptime |
+| **FortiSwitch-124E-POE** | Switch Controller | Switch (2,048 bytes) | ✅ Working | Port status, VLANs |
+| **FortiAP-231F** | WiFi Controller | Access Point (70,904 bytes) | ✅ Working | Client count, radio info |
+| **Laptop** | User Devices | Computer (2,024 bytes) | ✅ Working | IP, MAC, OS type |
+| **Desktop** | User Devices | PC Tower (2,040 bytes) | ✅ Working | IP, MAC, OS type |
+| **Mobile** | User Devices | Phone (2,040 bytes) | ✅ Working | IP, MAC, OS type |
+| **Server** | User Devices | Rack Server (2,036 bytes) | ✅ Working | IP, MAC, OS type |
+| **Interfaces** | System Interface | Network Port | N/A | Speed, status, MTU |
 
 ## 🚀 Deployment Options
 
