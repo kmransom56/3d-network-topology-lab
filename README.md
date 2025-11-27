@@ -240,7 +240,7 @@ docker run -p 8080:8080 --env-file .env fortigate-visualizer
 
 ### Development Setup
 ```bash
-git clone https://github.com/yourusername/3d-network-topology-lab.git
+git clone https://github.com/kmransom56/3d-network-topology-lab.git
 cd 3d-network-topology-lab
 pip install -r requirements.txt
 python run_fortigate_discovery.py --config
@@ -267,8 +267,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### **Getting Help**
 - 📖 [Documentation](FORTIGATE_SETUP.md)
 - 🚀 [Quick Start](QUICKSTART.md)
-- 🐛 [Issue Tracker](https://github.com/yourusername/3d-network-topology-lab/issues)
-- 💬 [Discussions](https://github.com/yourusername/3d-network-topology-lab/discussions)
+- 🐛 [Issue Tracker](https://github.com/kmransom56/3d-network-topology-lab/issues)
+- 💬 [Discussions](https://github.com/kmransom56/3d-network-topology-lab/discussions)
 
 ## 🎉 Acknowledgments
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>3D Network Visualizer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.0">
 </head>
 <body>
     <div id="loadingScreen">
@@ -72,11 +72,19 @@
     
     <script>
         // Initialize application
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             const app = new NetworkVisualizer('renderCanvas');
-            app.init().then(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-            });
+            try {
+                await app.init();
+                // Wait a bit for 3D rendering to start
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 2000);
+            } catch (error) {
+                console.error('Failed to initialize app:', error);
+                document.getElementById('loadingScreen').innerHTML = 
+                    '<div class="error">Failed to load 3D visualization. Please refresh.</div>';
+            }
         });
     </script>
 </body>

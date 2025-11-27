@@ -71,16 +71,20 @@ class NetworkVisualizer {
     
     async loadNetworkData() {
         try {
+            console.log('Loading network topology data...');
             // Try to load from live FortiGate data
             const response = await fetch('babylon_topology.json');
             if (response.ok) {
                 const data = await response.json();
+                console.log('Topology data loaded:', data);
                 await this.loadTopologyData(data);
             } else {
+                console.log('No topology file found, loading sample data...');
                 // Load sample data if no live data available
                 await this.loadSampleData();
             }
         } catch (error) {
+            console.error('Error loading network data:', error);
             console.log('Loading sample data...');
             await this.loadSampleData();
         }
