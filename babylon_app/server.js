@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-const PORT = 8080;
+const PORT = 3001;
 
 // MIME types
 const mimeTypes = {
@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
         pathname = '/index.html';
     }
     
-    const filePath = path.join(__dirname, pathname);
+    const filePath = path.join(__dirname, 'network-visualizer', pathname);
     const ext = path.parse(filePath).ext;
     const mimeType = mimeTypes[ext] || 'application/octet-stream';
     

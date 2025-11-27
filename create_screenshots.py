@@ -58,9 +58,12 @@ class ScreenshotCreator:
         await page.goto("http://localhost:3001")
         await page.wait_for_load_state('networkidle')
         
-        # Wait for the app to load
-        await page.wait_for_selector('#loadingScreen', state='hidden', timeout=10000)
-        await page.wait_for_timeout(2000)  # Extra time for 3D rendering
+        # Wait for the app to load (with fallback)
+        try:
+            await page.wait_for_selector('#loadingScreen', state='hidden', timeout=15000)
+        except:
+            print("Loading screen still visible, proceeding anyway...")
+            await page.wait_for_timeout(3000)  # Extra time for 3D rendering
         
         # Take full page screenshot
         await page.screenshot(
