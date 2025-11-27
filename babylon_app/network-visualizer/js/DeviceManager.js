@@ -127,6 +127,42 @@ class DeviceManager {
                         default:
                             mesh = this.createGenericDeviceModel(deviceInfo);
                     }
+                }
+            }
+            
+            // Position device
+            if (deviceInfo.position) {
+                mesh.position = new BABYLON.Vector3(
+                    deviceInfo.position.x || 0,
+                    deviceInfo.position.y || 1,
+                    deviceInfo.position.z || 0
+                );
+            } else {
+                this.autoPositionDevice(mesh, this.devices.size);
+            }
+            
+            // Store device reference
+            this.devices.set(deviceInfo.name, {
+                mesh: mesh,
+                info: deviceInfo,
+                visible: true
+            });
+            
+            // Add interaction handlers
+            this.setupDeviceInteraction(mesh, deviceInfo);
+            
+            // Create label
+            this.createLabel(mesh, deviceInfo.name);
+            
+            console.log(`✅ Created device: ${deviceInfo.name} (${deviceInfo.type})`);
+            
+        } catch (error) {
+            console.error(`❌ Failed to create device ${deviceInfo.name}:`, error);
+        }
+    }
+    
+    detectEndpointType(deviceInfo) {
+        const name = (deviceInfo.name || '').toLowerCase();
         const mac = (deviceInfo.mac || '').toLowerCase();
         
         // Check MAC vendor prefixes for common manufacturers
@@ -156,6 +192,12 @@ class DeviceManager {
         }
         
         return 'desktop'; // Default
+    }
+    
+    createModelInstance(deviceInfo, sourceMesh) {
+        const instance = sourceMesh.clone(`${deviceInfo.name}_3d_model`);
+        instance.position = new BABYLON.Vector3(0, 0, 0);
+        return instance;
     }
     
     autoPositionDevice(mesh, index) {
@@ -203,6 +245,33 @@ class DeviceManager {
         labelTexture.update();
         
         this.labels.set(text, labelPlane);
+    }
+    
+    setupDeviceInteraction(mesh, deviceInfo) {
+        mesh.actionManager = new BABYLON.ActionManager(this.scene);
+        
+        // Click interaction
+        mesh.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                () => this.onDeviceClick(deviceInfo)
+            )
+        );
+        
+        // Hover interaction
+        mesh.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOverTrigger,
+                () => this.onDeviceHover(mesh, true)
+            )
+        );
+        
+        mesh.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOutTrigger,
+                () => this.onDeviceHover(mesh, false)
+            )
+        );
     }
     
     onDeviceClick(deviceInfo) {
@@ -301,7 +370,7 @@ class DeviceManager {
             
             const label = this.labels.get(name);
             if (label) {
-                label.setEnabled(shouldShow);
+                label.setEnabled(shouldShow && label.parent.isEnabled);
             }
         });
     }
