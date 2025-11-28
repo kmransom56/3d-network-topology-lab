@@ -20,10 +20,10 @@ except ImportError:
 
 # FortiGate Connection Settings from environment
 FORTIGATE_CONFIG = {
-    "host": os.getenv('FORTIGATE_HOST', '192.168.1.1'),
-    "port": int(os.getenv('FORTIGATE_PORT', '443')),
+    "host": os.getenv('FORTIGATE_HOST', '192.168.0.254'),
+    "port": int(os.getenv('FORTIGATE_PORT', '10443')),
     "username": os.getenv('FORTIGATE_USERNAME', 'admin'),
-    "password": os.getenv('FORTIGATE_PASSWORD', 'YOUR_PASSWORD_HERE'),
+    "password": os.getenv('FORTIGATE_PASSWORD', '!cg@RW%G@o'),
     "verify_ssl": os.getenv('FORTIGATE_VERIFY_SSL', 'false').lower() == 'true'
 }
 

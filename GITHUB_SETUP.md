@@ -64,7 +64,7 @@ git commit -m "Initial commit: 3D Network Topology Lab
 - Comprehensive documentation"
 
 # Add remote repository (replace with your URL)
-git remote add origin https://github.com/yourusername/3d-network-topology-lab.git
+git remote add origin https://github.com/kmransom56/3d-network-topology-lab.git
 
 # Push to GitHub
 git branch -M main
@@ -131,7 +131,7 @@ git push -u origin main
 
 2. **Push Code to GitHub**
    ```bash
-   git remote add origin https://github.com/yourusername/3d-network-topology-lab.git
+   git remote add origin https://github.com/kmransom56/3d-network-topology-lab.git
    git branch -M main
    git push -u origin main
    ```
