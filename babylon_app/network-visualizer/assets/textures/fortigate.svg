@@ -1,0 +1,38 @@
+<svg width="512" height="256" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="#f0f0f0"/>
+    <rect x="10" y="10" width="492" height="236" rx="5" fill="#ffffff" stroke="#cccccc" stroke-width="2"/>
+    
+    <!-- Logo -->
+    <text x="30" y="50" font-family="Arial" font-weight="bold" font-size="24" fill="#333">FORTINET</text>
+    <text x="30" y="75" font-family="Arial" font-size="14" fill="#666">FortiGate</text>
+    
+    <!-- Ports -->
+    <g transform="translate(30, 100)">
+        <rect x="0" y="0" width="30" height="30" fill="#ddd" stroke="#999"/>
+        <rect x="35" y="0" width="30" height="30" fill="#ddd" stroke="#999"/>
+        <rect x="70" y="0" width="30" height="30" fill="#ddd" stroke="#999"/>
+        <rect x="105" y="0" width="30" height="30" fill="#ddd" stroke="#999"/>
+        
+        <rect x="0" y="35" width="30" height="30" fill="#ddd" stroke="#999"/>
+        <rect x="35" y="35" width="30" height="30" fill="#ddd" stroke="#999"/>
+        <rect x="70" y="35" width="30" height="30" fill="#ddd" stroke="#999"/>
+        <rect x="105" y="35" width="30" height="30" fill="#ddd" stroke="#999"/>
+    </g>
+    
+    <!-- LEDs -->
+    <g transform="translate(200, 115)">
+        <circle cx="0" cy="0" r="4" fill="#00ff00"/>
+        <circle cx="15" cy="0" r="4" fill="#00ff00"/>
+        <circle cx="30" cy="0" r="4" fill="#00ff00"/>
+        <circle cx="45" cy="0" r="4" fill="#cccccc"/>
+    </g>
+    
+    <!-- Vents -->
+    <g transform="translate(300, 100)">
+        <line x1="0" y1="0" x2="150" y2="0" stroke="#ddd" stroke-width="2"/>
+        <line x1="0" y1="10" x2="150" y2="10" stroke="#ddd" stroke-width="2"/>
+        <line x1="0" y1="20" x2="150" y2="20" stroke="#ddd" stroke-width="2"/>
+        <line x1="0" y1="30" x2="150" y2="30" stroke="#ddd" stroke-width="2"/>
+        <line x1="0" y1="40" x2="150" y2="40" stroke="#ddd" stroke-width="2"/>
+    </g>
+</svg>

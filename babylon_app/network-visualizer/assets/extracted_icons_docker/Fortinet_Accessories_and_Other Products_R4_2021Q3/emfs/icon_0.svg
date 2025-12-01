@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.0"
+   width="1.42mm"
+   height="0.95999998mm"
+   id="svg11"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3">
+    <pattern
+       id="EMFhbasepattern"
+       patternUnits="userSpaceOnUse"
+       width="6"
+       height="6"
+       x="0"
+       y="0" />
+  </defs>
+  <path
+     style="fill:#dddddd;fill-rule:evenodd;fill-opacity:1;stroke:#000000;stroke-width:0.018580288px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+     d="  M 5.2396414,3.6400503   L 0,3.6400503   L 0,0   L 5.2396414,0   L 5.2396414,3.6400503   z "
+     id="path5" />
+  <path
+     style="fill:#e2e2cc;fill-rule:evenodd;fill-opacity:1;stroke:#0a0a0a;stroke-width:0.0088984855px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+     d="  M 4.7339943,0.14973114   L 0.51611216,0.14973114   L 0.51611216,3.4999653   L 4.7339943,3.4999653   L 4.7339943,0.14973114   z "
+     id="path7" />
+  <path
+     style="fill:#000000;fill-rule:evenodd;fill-opacity:1;stroke:#161616;stroke-width:0.013813618px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+     d="  M 0.81500344,3.4221731   L 0.81500344,1.2495902   L 1.699075,1.2495902   L 1.699075,0.73839419   L 2.058229,0.73839419   L 2.058229,0.22719821   L 3.108064,0.22719821   L 3.108064,0.73839419   L 3.467218,0.73839419   L 3.467218,1.2495902   L 4.3512896,1.2495902   L 4.3512896,3.4221731   L 0.81500344,3.4221731   z "
+     id="path9" />
+</svg>
