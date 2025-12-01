@@ -26,11 +26,12 @@ logger = logging.getLogger(__name__)
 class FortiGateAPIClient:
     """Client for interacting with FortiGate REST API"""
     
-    def __init__(self, host: str, username: str, password: str, port: int = 443, verify_ssl: bool = False):
+    def __init__(self, host: str, username: str, password: str, port: int = 443, verify_ssl: bool = False, api_token: str = None):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
+        self.api_token = api_token
         self.verify_ssl = verify_ssl
         self.base_url = f"https://{host}:{port}"
         self.session = requests.Session()
@@ -41,43 +42,30 @@ class FortiGateAPIClient:
         if not verify_ssl:
             self.session.verify = False
         
+        # If API token is provided, use it for authentication
+        if api_token:
+            self.session.headers.update({'Authorization': f'Bearer {api_token}'})
+        
         self.csrf_token = None
         self.session_id = None
     
     def login(self) -> bool:
-        """Authenticate using session-based login"""
+        """Authenticate using API token - no login needed for REST API"""
         try:
-            # First, get login page to obtain CSRF token
-            login_url = f"{self.base_url}/login"
-            response = self.session.get(login_url)
-            
-            if response.status_code != 200:
-                logger.error(f"Failed to access login page: {response.status_code}")
-                return False
-            
-            # Extract CSRF token from cookies or response
-            self.csrf_token = response.cookies.get('ccsrftoken')
-            
-            # Prepare login payload
-            login_data = {
-                'username': self.username,
-                'secretkey': self.password,
-                'redir': '/'
-            }
-            
-            # Add CSRF header if available
-            if self.csrf_token:
-                self.session.headers.update({'X-CSRFToken': self.csrf_token})
-            
-            # Perform login
-            response = self.session.post(login_url, data=login_data)
-            
-            if response.status_code == 200 and 'logout' in response.text.lower():
-                # Check if login was successful by looking for logout link or dashboard
-                logger.info(f"Successfully logged in to FortiGate at {self.host}")
-                return True
+            # If API token is provided, test it directly
+            if self.api_token:
+                # Test API token with a simple API call
+                test_url = f"{self.base_url}/api/v2/monitor/system/status?vdom=root"
+                response = self.session.get(test_url)
+                
+                if response.status_code == 200 and response.headers.get('content-type', '').startswith('application/json'):
+                    logger.info(f"Successfully authenticated with API token to FortiGate at {self.host}")
+                    return True
+                else:
+                    logger.error(f"API token authentication failed: {response.status_code} - {response.text[:200]}")
+                    return False
             else:
-                logger.error(f"Login failed: {response.status_code} - {response.text}")
+                logger.error("No API token provided")
                 return False
                 
         except Exception as e:
@@ -113,11 +101,27 @@ class FortiGateAPIClient:
             return False
     
     def get_system_status(self) -> Dict:
-        """Get system status information"""
+        """Get FortiGate system status"""
         try:
-            response = self.session.get(f"{self.base_url}/api/v2/monitor/system/status")
-            response.raise_for_status()
-            return response.json()
+            url = f"{self.base_url}/api/v2/monitor/system/status?vdom=root"
+            response = self.session.get(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Extract the actual status from results
+                results = data.get('results', {})
+                # Merge top-level fields with results for easier access
+                status_data = {
+                    **results,
+                    'serial': data.get('serial', results.get('serial', 'Unknown')),
+                    'version': data.get('version', results.get('version', 'Unknown')),
+                    'hostname': results.get('hostname', data.get('hostname', 'FortiGate')),
+                    'status': data.get('status', 'unknown')
+                }
+                return status_data
+            else:
+                logger.error(f"Failed to get system status: {response.status_code}")
+                return {}
         except Exception as e:
             logger.error(f"Failed to get system status: {e}")
             return {}
@@ -125,9 +129,15 @@ class FortiGateAPIClient:
     def get_system_info(self) -> Dict:
         """Get system information"""
         try:
-            response = self.session.get(f"{self.base_url}/api/v2/cmdb/system/global")
-            response.raise_for_status()
-            return response.json()
+            url = f"{self.base_url}/api/v2/cmdb/system/global?vdom=root"
+            response = self.session.get(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            else:
+                logger.error(f"Failed to get system info: {response.status_code}")
+                return {}
         except Exception as e:
             logger.error(f"Failed to get system info: {e}")
             return {}
@@ -152,7 +162,6 @@ class FortiGateAPIClient:
             return data.get('results', [])
         except Exception as e:
             logger.error(f"Failed to get firewall policies: {e}")
-            return []
     
     def get_addresses(self) -> List[Dict]:
         """Get firewall address objects"""
@@ -163,6 +172,17 @@ class FortiGateAPIClient:
             return data.get('results', [])
         except Exception as e:
             logger.error(f"Failed to get addresses: {e}")
+            return []
+    
+    def get_firewall_policies(self) -> List[Dict]:
+        """Get firewall policies"""
+        try:
+            response = self.session.get(f"{self.base_url}/api/v2/cmdb/firewall/policy")
+            response.raise_for_status()
+            data = response.json()
+            return data.get('results', [])
+        except Exception as e:
+            logger.error(f"Failed to get firewall policies: {e}")
             return []
     
     def get_vips(self) -> List[Dict]:
@@ -200,10 +220,15 @@ class FortiGateAPIClient:
     def get_wifi_ap_list(self) -> List[Dict]:
         """Get managed access points"""
         try:
-            response = self.session.get(f"{self.base_url}/api/v2/cmdb/wifi/wifi-ap-managed")
-            response.raise_for_status()
-            data = response.json()
-            return data.get('results', [])
+            url = f"{self.base_url}/api/v2/monitor/wifi/managed_ap/select?vdom=root"
+            response = self.session.get(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return data.get('results', [])
+            else:
+                logger.error(f"Failed to get AP list: {response.status_code}")
+                return []
         except Exception as e:
             logger.error(f"Failed to get AP list: {e}")
             return []
@@ -221,21 +246,31 @@ class FortiGateAPIClient:
     def get_managed_switches(self) -> List[Dict]:
         """Get managed switches"""
         try:
-            response = self.session.get(f"{self.base_url}/api/v2/cmdb/switch-controller/managed-switch")
-            response.raise_for_status()
-            data = response.json()
-            return data.get('results', [])
+            url = f"{self.base_url}/api/v2/cmdb/switch-controller/managed-switch?vdom=root"
+            response = self.session.get(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return data.get('results', [])
+            else:
+                logger.error(f"Failed to get managed switches: {response.status_code}")
+                return []
         except Exception as e:
             logger.error(f"Failed to get managed switches: {e}")
             return []
     
     def get_user_devices(self) -> List[Dict]:
-        """Get connected user devices"""
+        """Get connected user devices (endpoints)"""
         try:
-            response = self.session.get(f"{self.base_url}/api/v2/monitor/user/device")
-            response.raise_for_status()
-            data = response.json()
-            return data.get('results', [])
+            url = f"{self.base_url}/api/v2/monitor/user/device/query?vdom=root"
+            response = self.session.get(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return data.get('results', [])
+            else:
+                logger.error(f"Failed to get user devices: {response.status_code}")
+                return []
         except Exception as e:
             logger.error(f"Failed to get user devices: {e}")
             return []
@@ -275,11 +310,14 @@ class NetworkTopologyBuilder:
         system_info = self.api_client.get_system_info()
         
         # Add FortiGate as central device
+        results = system_info.get('results', {})
+        first_result = results if isinstance(results, dict) else (results[0] if results and isinstance(results, list) else {})
+        
         fortigate_device = {
             "id": "fortigate_main",
             "name": system_status.get('hostname', 'FortiGate'),
             "type": "firewall",
-            "model": system_info.get('results', [{}])[0].get('platform_str', 'Unknown'),
+            "model": system_status.get('model', first_result.get('platform_str', 'Unknown')),
             "serial": system_status.get('serial', 'Unknown'),
             "version": system_status.get('version', 'Unknown'),
             "ip": self.api_client.host,
@@ -351,7 +389,12 @@ class NetworkTopologyBuilder:
             })
         
         # Get access points
-        access_points = self.api_client.get_wifi_ap_list()
+        try:
+            access_points = self.api_client.get_wifi_ap_list()
+        except Exception as e:
+            logger.warning(f"Failed to get access points: {e}")
+            access_points = []
+            
         for i, ap in enumerate(access_points[:20]):  # Limit to first 20 APs
             ap_device = {
                 "id": f"ap_{ap.get('name', f'ap_{i}')}",
@@ -380,7 +423,12 @@ class NetworkTopologyBuilder:
             })
         
         # Get user devices
-        user_devices = self.api_client.get_user_devices()
+        try:
+            user_devices = self.api_client.get_user_devices()
+        except Exception as e:
+            logger.warning(f"Failed to get user devices: {e}")
+            user_devices = []
+            
         for i, device in enumerate(user_devices[:50]):  # Limit to first 50 devices
             user_device = {
                 "id": f"device_{device.get('mac', f'device_{i}').replace(':', '_')}",

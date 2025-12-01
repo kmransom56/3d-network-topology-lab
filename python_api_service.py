@@ -17,11 +17,11 @@ import aiohttp_cors
 sys.path.insert(0, str(Path(__file__).parent))
 
 try:
-    from fortigate_api_integration import FortiGateAPIClient
+    from enhanced_fortigate_integration import EnhancedFortiGateClient
     from fortigate_config import get_config, validate_config
 except ImportError:
     print("Warning: FortiGate modules not available, using mock data")
-    FortiGateAPIClient = None
+    EnhancedFortiGateClient = None
 
 class PythonAPIService:
     def __init__(self):
@@ -32,22 +32,15 @@ class PythonAPIService:
     def get_mock_config(self):
         return {
             'fortigate': {
-                'host': os.environ.get('FORTIGATE_HOST', '192.168.1.1'),
-                'username': os.environ.get('FORTIGATE_USERNAME', 'admin'),
-                'password': os.environ.get('FORTIGATE_PASSWORD', ''),
-                'port': int(os.environ.get('FORTIGATE_PORT', 443)),
+                'host': os.environ.get('FORTIGATE_HOST', '192.168.0.254'),
+                'api_token': os.environ.get('FORTIGATE_API_TOKEN', '199psNw33b8bq581dNmQqNpkGH53bm'),
+                'port': int(os.environ.get('FORTIGATE_PORT', 10443)),
                 'verify_ssl': os.environ.get('VERIFY_SSL', 'false').lower() == 'true'
             }
         }
     
-    async def start(self):
-        """Initialize the service"""
-        print("Python API Service starting...")
-        
-    async def get_topology(self, request):
-        """Get network topology data"""
-        # Return mock topology data
-        topology_data = {
+    def get_mock_topology(self):
+        return {
             'fortigate': {
                 'name': 'FortiGate-61E',
                 'serial': 'FG61E3X16800123',
@@ -58,7 +51,39 @@ class PythonAPIService:
             'access_points': [],
             'endpoints': []
         }
-        return web.json_response(topology_data)
+    
+    async def start(self):
+        """Initialize the service"""
+        print("Python API Service starting...")
+        
+    async def get_topology(self, request: Request) -> Response:
+        """Get network topology using enhanced FortiGate client"""
+        try:
+            if not self.forti_client:
+                # Initialize client if not already done
+                config = get_config()
+                self.forti_client = EnhancedFortiGateClient(
+                    host=config['fortigate']['host'],
+                    api_token=config['fortigate']['api_token'],
+                    port=config['fortigate']['port'],
+                    verify_ssl=config['fortigate']['verify_ssl']
+                )
+            
+            # Get complete topology using enhanced client
+            topology = self.forti_client.get_complete_topology()
+            
+            return Response(
+                content=json.dumps(topology, indent=2),
+                content_type="application/json"
+            )
+            
+        except Exception as e:
+            print(f"Error getting topology: {e}")
+            # Fallback to mock data
+            return Response(
+                content=json.dumps(self.get_mock_topology(), indent=2),
+                content_type="application/json"
+            )
     
     async def get_fortiaps(self, request):
         """Get FortiAP data"""
